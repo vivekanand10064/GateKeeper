@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GateKeeper | Analytics Dashboard</title>
+
+    <link rel="stylesheet" href="css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/dashboard.js" defer></script>
+</head>
+
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="brand">
+            Gate<span>Keeper</span>
+        </div>
+
+        <nav>
+        <a href="#dashboard" class="nav-item active">Dashboard</a>
+        <a href="#traffic" class="nav-item">Traffic Analytics</a>
+        <a href="#api-health" class="nav-item">API Health</a>
+        <a href="#routes" class="nav-item">API Routes</a>
+        <a href="#performance" class="nav-item">Performance</a>
+        <a href="#requests" class="nav-item">Requests</a>
+        </nav>
+     </aside>
+     
+    <main class="main" id="mainContent">
+
+        <header class="header">
+
+            <div class="header-left">
+
+                <button
+                    id="sidebarToggleButton"
+                    class="sidebar-toggle"
+                    type="button"
+                    aria-label="Collapse sidebar"
+                    title="Toggle sidebar">
+                    <span id="sidebarToggleIcon">☰</span>
+                </button>
+
+                <div class="header-title">
+                    <h1>Analytics Dashboard</h1>
+                    <p>Monitor your API usage and performance</p>
+                </div>
+
+            </div>
+
+            <div class="header-actions">
+
+                <div class="status">Analytics Service</div>
+
+                <button
+                    id="themeToggleButton"
+                    class="theme-toggle"
+                    type="button"
+                    aria-label="Switch to dark mode"
+                    title="Switch theme">
+
+                    <span id="themeToggleIcon">🌙</span>
+                    <span id="themeToggleText">Dark mode</span>
+
+                </button>
+
+            </div>
+
+        </header>
+
+        <!-- Date Range Filter -->
+        <section class="date-filter-panel">
+
+            <div class="date-filter-heading">
+                <div>
+                    <h3>Date Range</h3>
+                    <p>Filter analytics by selected period</p>
+                </div>
+            </div>
+
+            <div class="date-filter-controls">
+
+                <div class="filter-group">
+                    <label for="dateRangeSelect">Select Period</label>
+
+                    <select id="dateRangeSelect">
+                        <option value="today">Today</option>
+                        <option value="7days" selected>Last 7 Days</option>
+                        <option value="30days">Last 30 Days</option>
+                        <option value="custom">Custom Range</option>
+                    </select>
+                </div>
+                <button
+                    type="button"
+                    id="exportCsvButton"
+                    class="export-csv-button"
+                >
+                    <span>↓</span> Export CSV
+                </button>                
+                <div class="custom-date-fields" id="customDateFields" hidden>
+
+                    <div class="filter-group">
+                        <label for="startDateInput">Start Date</label>
+                        <input type="date" id="startDateInput">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="endDateInput">End Date</label>
+                        <input type="date" id="endDateInput">
+                    </div>
+
+                </div>
+
+                <button
+                    type="button"
+                    id="applyDateFilterButton"
+                    class="apply-filter-button">
+                    Apply Filter
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- Summary Cards -->
+        <section class="cards" id="dashboard">
+
+            <div class="card">
+                <p>Total Requests</p>
+                <h2 id="totalRequests">--</h2>
+            </div>
+
+            <div class="card">
+                <p>Successful Requests</p>
+                <h2 class="success" id="successfulRequests">--</h2>
+            </div>
+
+            <div class="card">
+                <p>Failed Requests</p>
+                <h2 class="failure" id="failedRequests">--</h2>
+            </div>
+
+            <div class="card">
+                <p>Average Response Time</p>
+                <h2 id="averageResponseTime">--</h2>
+            </div>
+            
+            
+
+        </section>
+
+        <!-- Charts -->
+        <section class="charts">
+
+            <div class="panel" id="performance">
+                <h3>API Performance</h3>
+
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>Request Status</h3>
+
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+
+        </section>
+
+<!-- API Traffic Analytics -->
+<section class="panel traffic-analytics-section" id="traffic">
+
+    <div class="section-heading">
+        <div>
+            <h3>API Traffic Analytics</h3>
+            <p>Monitor incoming requests, traffic trends and unusual activity</p>
+        </div>
+        <span class="status">Live Traffic Insights</span>
+    </div>
+
+    <!-- Traffic Summary Cards -->
+    <div class="cards traffic-summary-cards">
+
+        <div class="card">
+            <p>Total Traffic</p>
+            <h2 id="trafficTotalRequests">--</h2>
+        </div>
+
+        <div class="card">
+            <p>Requests Per Minute</p>
+            <h2 id="requestsPerMinute">--</h2>
+        </div>
+
+        <div class="card">
+            <p>Requests Per Hour</p>
+            <h2 id="requestsPerHour">--</h2>
+        </div>
+
+        <div class="card">
+            <p>Peak Request Count</p>
+            <h2 id="peakRequestCount">--</h2>
+        </div>
+
+    </div>
+
+    <!-- Peak Traffic Information -->
+    <div class="traffic-peak-panel">
+        <div>
+            <span class="traffic-label">Peak Traffic Time</span>
+            <h3 id="peakTrafficTime">Waiting for traffic data...</h3>
+        </div>
+    </div>
+
+    <!-- Traffic Charts -->
+    <div class="charts traffic-charts">
+
+        <div class="panel">
+            <h3>Traffic Trend</h3>
+            <p>Requests grouped by time interval</p>
+
+            <div class="chart-container">
+                <canvas id="trafficTrendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>Route-wise Traffic Comparison</h3>
+            <p>Distribution of requests across API routes</p>
+
+            <div class="chart-container">
+                <canvas id="routeTrafficChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Route Traffic Details -->
+    <div class="traffic-route-panel">
+
+        <div class="section-heading">
+            <div>
+                <h3>Route Traffic Details</h3>
+                <p>Request distribution for each API route</p>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Route</th>
+                    <th>Total Requests</th>
+                    <th>Traffic Share (%)</th>
+                </tr>
+            </thead>
+
+            <tbody id="routeTrafficTable">
+                <tr>
+                    <td colspan="3" class="empty">
+                        Loading traffic data...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Traffic Spike Alerts -->
+    <div class="traffic-alerts-panel">
+
+        <div class="section-heading">
+            <div>
+                <h3>Traffic Spike Alerts</h3>
+                <p>Detect unusual increases in API request activity</p>
+            </div>
+
+            <span id="trafficAlertCount" class="health-alert-count">
+                0 Alerts
+            </span>
+        </div>
+
+        <div id="trafficAlertsList" class="health-alerts-list">
+            <div class="health-alert-empty">
+                No traffic spikes detected.
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+<!-- API Health Monitoring -->
+<section class="panel" id="api-health">
+    <div class="section-heading">
+        <div>
+            <h3>API Health Monitoring</h3>
+            <p>Monitor route reliability and identify unhealthy APIs</p>
+        </div>
+    </div>
+    <div class="health-summary-cards">
+
+    <div class="health-summary-card healthy-card">
+        <span class="health-summary-label">Healthy APIs</span>
+        <h2 id="healthyRouteCount">0</h2>
+    </div>
+
+    <div class="health-summary-card warning-card">
+        <span class="health-summary-label">Warning APIs</span>
+        <h2 id="warningRouteCount">0</h2>
+    </div>
+
+    <div class="health-summary-card critical-card">
+        <span class="health-summary-label">Critical APIs</span>
+        <h2 id="criticalRouteCount">0</h2>
+    </div>
+
+</div>
+
+<!-- API Health Alerts -->
+<div class="health-alerts-panel">
+    <div class="section-heading">
+        <div>
+            <h3>API Health Alerts</h3>
+            <p>Important issues detected in your API routes</p>
+        </div>
+        <span id="healthAlertCount" class="health-alert-count">0 Alerts</span>
+    </div>
+
+    <div id="healthAlertsList" class="health-alerts-list">
+        <div class="health-alert-empty">
+            No health alerts detected.
+        </div>
+    </div>
+</div>
+
+
+    <table>
+        <thead>
+            <tr>
+                <th>Route</th>
+                <th>Health Status</th>
+                <th>Error Rate (%)</th>
+                <th>Avg Response (ms)</th>
+                <th>Health Details</th>
+            </tr>
+        </thead>
+
+        <tbody id="healthTable">
+            <tr>
+                <td colspan="5" class="empty">
+                    Loading API health...
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+        <!-- Route Analytics -->
+        <section class="panel" id="routes">
+
+            <h3>Route Analytics</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Route</th>
+                        <th>Total</th>
+                        <th>Successful</th>
+                        <th>Failed</th>
+                        <th>Avg Response (ms)</th>
+                    </tr>
+                </thead>
+
+                <tbody id="routeTable">
+                    <tr>
+                        <td colspan="5" class="empty">
+                            Loading analytics...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+
+        <!-- Recent API Requests -->
+        <section class="panel" id="requests" style="margin-top: 25px;">
+
+            <h3>Recent API Requests</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Method</th>
+                        <th>Path</th>
+                        <th>Status</th>
+                        <th>Response Time</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+
+                <tbody id="requestTable">
+                    <tr>
+                        <td colspan="5" class="empty">
+                            Loading requests...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
